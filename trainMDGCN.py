@@ -15,7 +15,7 @@ def GCNevaluate(mask1, labels1):
     return outs_val[0], outs_val[1], (time.time() - t_test)
 
 data_name = 'paviaU'
-num_classes = 10
+num_classes = 9
 
 learning_rate = 1e-3
 epochs=700
@@ -25,7 +25,7 @@ img_gt = data_name+'_gt'
 
 
 Data = load_HSI_data(data_name)
-model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh], Data[img_gt], Data['trpos'])
+model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/Data[img_gyh].max(), Data[img_gt], Data['trpos'])
 sp_mean = np.array(model.sp_mean, dtype='float32')
 sp_label = np.array(model.sp_label, dtype='float32')
 trmask = np.matlib.reshape(np.array(model.trmask, dtype='bool'), [np.shape(model.trmask)[0], 1])
