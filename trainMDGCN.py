@@ -25,7 +25,7 @@ img_gt = data_name+'_gt'
 
 
 Data = load_HSI_data(data_name)
-model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh], Data[img_gt], Data['trpos'])
+model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/255, Data[img_gt], Data['trpos'])
 sp_mean = np.array(model.sp_mean, dtype='float32')
 sp_label = np.array(model.sp_label, dtype='float32')
 trmask = np.matlib.reshape(np.array(model.trmask, dtype='bool'), [np.shape(model.trmask)[0], 1])
