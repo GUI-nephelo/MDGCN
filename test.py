@@ -5,16 +5,17 @@ from funcCNN import *
 from BuildSPInst_A import *
 from sklearn import metrics
 
+
 method = "MDGCN"
-data_name = 'IP'
-num_classes = 16
-img_gyh = data_name+'_gyh'
+data_name = 'paviaU'
+num_classes = 9
+img_gyh = data_name+''
 img_gt = data_name+'_gt'
 
-
+epochs = 5000
 
 Data = load_HSI_data(data_name)
-model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh], Data[img_gt], Data['trpos'])
+model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/Data[img_gyh].max(), Data[img_gt], Data['trpos'])
 sp_mean = np.array(model.sp_mean, dtype='float32')
 sp_label = np.array(model.sp_label, dtype='float32')
 trmask = np.matlib.reshape(np.array(model.trmask, dtype='bool'), [np.shape(model.trmask)[0], 1])
@@ -44,7 +45,7 @@ temask = np.matlib.reshape(np.array(model.temask, dtype='int32'), [np.shape(mode
 
 with tf.Session() as sess:
     
-    saver = tf.train.import_meta_graph('./checkpoints/IP.ckpt-700.meta')
+    saver = tf.train.import_meta_graph(f'./checkpoints/{data_name}.ckpt-{epochs}.meta')
     ckpt = tf.train.get_checkpoint_state('./checkpoints/')
     saver.restore(sess, ckpt.model_checkpoint_path)
     
@@ -79,7 +80,7 @@ with tf.Session() as sess:
     print("\ntest OA=", OA, ' test AA=', AA, ' kpp=', kappa, "\nproducer_acc",
           producer_acc, '\nconfusion matrix=', confusion_matrix)
     # save
-    f = open('./results/' + data_name + '_results.txt', 'a+')
+    f = open('./results/' + data_name + f'_{epochs}_results.txt', 'a+')
     str_results = '\n' + method + ': ======================' \
                   + "\nOA=" + str(OA) \
                   + "\nAA=" + str(AA) \
@@ -89,6 +90,3 @@ with tf.Session() as sess:
 
     f.write(str_results)
     f.close()
-
-    # print("Test set results:", "cost=", "{:.5f}".format(test_cost),
-    #   "accuracy=", "{:.5f}".format(test_acc), "time=", "{:.5f}".format(test_duration))
