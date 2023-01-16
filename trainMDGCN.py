@@ -4,7 +4,7 @@ from funcCNN import *
 from GCNModel2 import GCNModel
 from BuildSPInst_A import *
 import tensorflow as tf
-import time
+import time,os
 
 
 
@@ -18,14 +18,14 @@ data_name = 'KSC'
 num_classes = 13
 
 learning_rate = 1e-3
-epochs=700
+epochs=5000
 img_gyh = data_name+''
 img_gt = data_name+'_gt'
 
 
 
 Data = load_HSI_data(data_name)
-model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/255, Data[img_gt], Data['trpos'])
+model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/Data[img_gyh].max(), Data[img_gt], Data['trpos'])
 sp_mean = np.array(model.sp_mean, dtype='float32')
 sp_label = np.array(model.sp_label, dtype='float32')
 trmask = np.matlib.reshape(np.array(model.trmask, dtype='bool'), [np.shape(model.trmask)[0], 1])
@@ -62,7 +62,8 @@ for epoch in range(epochs):
     print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(outs[1]),
           "train_acc=", "{:.5f}".format(outs[2]))
         
-saver.save(sess, './checkpoints/%s.ckpt'%(data_name), global_step=700)
+os.system("rm ./checkpoints/*")
+saver.save(sess, './checkpoints/%s.ckpt'%(data_name), global_step=epochs)
 print("Optimization Finished!")
 # Testing
 test_cost, test_acc, test_duration = GCNevaluate(temask, sp_label)
