@@ -14,18 +14,20 @@ def GCNevaluate(mask1, labels1):
     outs_val = sess.run([GCNmodel.loss, GCNmodel.accuracy], feed_dict={labels: labels1, mask: mask1})
     return outs_val[0], outs_val[1], (time.time() - t_test)
 
+num = 1
+
 data_name = 'paviaU'
 num_classes = 9
 
 learning_rate = 1e-3
-epochs=700
+epochs=5000
 img_gyh = data_name+''
 img_gt = data_name+'_gt'
 
 
 
-Data = load_HSI_data(data_name)
-model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/Data[img_gyh].max(), Data[img_gt], Data['trpos'])
+Data = load_HSI_data(data_name,num)
+model = GetInst_A(Data['useful_sp_lab'], Data[img_gyh]/Data[img_gyh].max(), Data[img_gt], Data[f'trpos{num}'])
 sp_mean = np.array(model.sp_mean, dtype='float32')
 sp_label = np.array(model.sp_label, dtype='float32')
 trmask = np.matlib.reshape(np.array(model.trmask, dtype='bool'), [np.shape(model.trmask)[0], 1])
@@ -62,7 +64,7 @@ for epoch in range(epochs):
     print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(outs[1]),
           "train_acc=", "{:.5f}".format(outs[2]))
         
-saver.save(sess, './checkpoints/%s.ckpt'%(data_name), global_step=700)
+saver.save(sess, './checkpoints/%s-%s.ckpt'%(data_name,num), global_step=epochs)
 print("Optimization Finished!")
 # Testing
 test_cost, test_acc, test_duration = GCNevaluate(temask, sp_label)
