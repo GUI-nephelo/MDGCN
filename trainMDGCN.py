@@ -4,7 +4,7 @@ from funcCNN import *
 from GCNModel2 import GCNModel
 from BuildSPInst_A import *
 import tensorflow as tf
-import time
+import time,os
 
 
 
@@ -18,7 +18,7 @@ data_name = 'IP'
 num_classes = 16
 
 learning_rate = 1e-3
-epochs=700
+epochs=5000
 img_gyh = data_name+'_gyh'
 img_gt = data_name+'_gt'
 
@@ -61,8 +61,8 @@ for epoch in range(epochs):
                     mask:trmask })
     print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(outs[1]),
           "train_acc=", "{:.5f}".format(outs[2]))
-        
-saver.save(sess, './checkpoints/%s.ckpt'%(data_name), global_step=700)
+os.system("rm ./checkpoints/*")
+saver.save(sess, './checkpoints/%s.ckpt'%(data_name), global_step=epochs)
 print("Optimization Finished!")
 # Testing
 test_cost, test_acc, test_duration = GCNevaluate(temask, sp_label)
