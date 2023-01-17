@@ -4,7 +4,7 @@ from funcCNN import *
 from GCNModel2 import GCNModel
 from BuildSPInst_A import *
 import tensorflow as tf
-import time
+import time,os
 
 
 
